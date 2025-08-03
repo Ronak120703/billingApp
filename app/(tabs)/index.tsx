@@ -1,75 +1,127 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { HelloWave } from '@/components/HelloWave';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
+import { BillingChart } from '@/components/BillingChart';
+import { DashboardCard } from '@/components/DashboardCard';
+import { PeriodSelector } from '@/components/PeriodSelector';
 import { ThemedText } from '@/components/ThemedText';
-import { ThemedView } from '@/components/ThemedView';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import { getBillingData } from '@/services/billingData';
+import React, { useState } from 'react';
+import { ScrollView, StyleSheet, View } from 'react-native';
 
-export default function HomeScreen() {
+type Period = 'today' | 'weekly' | 'yearly';
+
+export default function DashboardScreen() {
+  const [selectedPeriod, setSelectedPeriod] = useState<Period>('today');
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+
+  const billingData = getBillingData(selectedPeriod);
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#A1CEDC', dark: '#1D3D47' }}
-      headerImage={
-        <Image
-          source={require('@/assets/images/partial-react-logo.png')}
-          style={styles.reactLogo}
+    <ScrollView 
+      style={[styles.container, { backgroundColor }]}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.header}>
+        <ThemedText style={[styles.title, { color: textColor }]}>
+          Billing Dashboard
+        </ThemedText>
+        <ThemedText style={[styles.subtitle, { color: textColor }]}>
+          Track your billing performance
+        </ThemedText>
+      </View>
+
+      <PeriodSelector
+        selectedPeriod={selectedPeriod}
+        onPeriodChange={setSelectedPeriod}
+      />
+
+      <View style={styles.cardsContainer}>
+        <DashboardCard
+          title="Total Revenue"
+          value={`$${billingData.revenue.toLocaleString()}`}
+          subtitle={`${selectedPeriod} earnings`}
+          trend={{ value: 12.5, isPositive: true }}
         />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Welcome!</ThemedText>
-        <HelloWave />
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 1: Try it</ThemedText>
-        <ThemedText>
-          Edit <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> to see changes.
-          Press{' '}
-          <ThemedText type="defaultSemiBold">
-            {Platform.select({
-              ios: 'cmd + d',
-              android: 'cmd + m',
-              web: 'F12',
-            })}
-          </ThemedText>{' '}
-          to open developer tools.
+
+        <DashboardCard
+          title="Invoices Generated"
+          value={billingData.invoices.toString()}
+          subtitle={`${selectedPeriod} invoices`}
+          trend={{ value: 8.2, isPositive: true }}
+        />
+
+        <DashboardCard
+          title="Pending Amount"
+          value={`$${billingData.pendingAmount.toLocaleString()}`}
+          subtitle="Awaiting payment"
+          trend={{ value: 3.1, isPositive: false }}
+        />
+
+        <DashboardCard
+          title="Paid Amount"
+          value={`$${billingData.paidAmount.toLocaleString()}`}
+          subtitle="Successfully collected"
+          trend={{ value: 15.7, isPositive: true }}
+        />
+      </View>
+
+      <BillingChart
+        data={billingData.chartData}
+        title={`Revenue Trend - ${selectedPeriod.charAt(0).toUpperCase() + selectedPeriod.slice(1)}`}
+      />
+
+      <View style={styles.summaryContainer}>
+        <ThemedText style={[styles.summaryTitle, { color: textColor }]}>
+          Summary
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 2: Explore</ThemedText>
-        <ThemedText>
-          {`Tap the Explore tab to learn more about what's included in this starter app.`}
+        <ThemedText style={[styles.summaryText, { color: textColor }]}>
+          Your billing performance for {selectedPeriod} shows strong growth with a 
+          {selectedPeriod === 'today' ? ' 12.5%' : selectedPeriod === 'weekly' ? ' 8.2%' : ' 15.7%'} 
+          increase in revenue compared to the previous period. 
+          {selectedPeriod === 'today' ? ' Today\'s' : selectedPeriod === 'weekly' ? ' This week\'s' : ' This year\'s'} 
+          total of ${billingData.revenue.toLocaleString()} represents excellent progress toward your billing goals.
         </ThemedText>
-      </ThemedView>
-      <ThemedView style={styles.stepContainer}>
-        <ThemedText type="subtitle">Step 3: Get a fresh start</ThemedText>
-        <ThemedText>
-          {`When you're ready, run `}
-          <ThemedText type="defaultSemiBold">npm run reset-project</ThemedText> to get a fresh{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> directory. This will move the current{' '}
-          <ThemedText type="defaultSemiBold">app</ThemedText> to{' '}
-          <ThemedText type="defaultSemiBold">app-example</ThemedText>.
-        </ThemedText>
-      </ThemedView>
-    </ParallaxScrollView>
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  titleContainer: {
-    flexDirection: 'row',
-    alignItems: 'center',
-    gap: 8,
+  container: {
+    flex: 1,
   },
-  stepContainer: {
-    gap: 8,
+  contentContainer: {
+    padding: 16,
+  },
+  header: {
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  cardsContainer: {
+    marginBottom: 16,
+  },
+  summaryContainer: {
+    marginTop: 16,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(10, 126, 164, 0.1)',
+  },
+  summaryTitle: {
+    fontSize: 18,
+    fontWeight: '600',
     marginBottom: 8,
   },
-  reactLogo: {
-    height: 178,
-    width: 290,
-    bottom: 0,
-    left: 0,
-    position: 'absolute',
+  summaryText: {
+    fontSize: 14,
+    lineHeight: 20,
+    opacity: 0.8,
   },
 });

@@ -1,110 +1,297 @@
-import { Image } from 'expo-image';
-import { Platform, StyleSheet } from 'react-native';
-
-import { Collapsible } from '@/components/Collapsible';
-import { ExternalLink } from '@/components/ExternalLink';
-import ParallaxScrollView from '@/components/ParallaxScrollView';
 import { ThemedText } from '@/components/ThemedText';
 import { ThemedView } from '@/components/ThemedView';
-import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useThemeColor } from '@/hooks/useThemeColor';
+import React from 'react';
+import { ScrollView, StyleSheet, TouchableOpacity, View } from 'react-native';
 
-export default function TabTwoScreen() {
+interface Invoice {
+  id: string;
+  clientName: string;
+  amount: number;
+  status: 'paid' | 'pending' | 'overdue';
+  date: string;
+  dueDate: string;
+}
+
+const mockInvoices: Invoice[] = [
+  {
+    id: 'INV-001',
+    clientName: 'Tech Solutions Inc.',
+    amount: 2500,
+    status: 'paid',
+    date: '2024-01-15',
+    dueDate: '2024-01-30',
+  },
+  {
+    id: 'INV-002',
+    clientName: 'Digital Marketing Pro',
+    amount: 1800,
+    status: 'pending',
+    date: '2024-01-18',
+    dueDate: '2024-02-02',
+  },
+  {
+    id: 'INV-003',
+    clientName: 'Web Design Studio',
+    amount: 3200,
+    status: 'overdue',
+    date: '2024-01-10',
+    dueDate: '2024-01-25',
+  },
+  {
+    id: 'INV-004',
+    clientName: 'Mobile App Dev',
+    amount: 4500,
+    status: 'paid',
+    date: '2024-01-20',
+    dueDate: '2024-02-05',
+  },
+  {
+    id: 'INV-005',
+    clientName: 'Cloud Services Ltd.',
+    amount: 1200,
+    status: 'pending',
+    date: '2024-01-22',
+    dueDate: '2024-02-07',
+  },
+];
+
+function InvoiceCard({ invoice }: { invoice: Invoice }) {
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+
+  const getStatusColor = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return '#22C55E';
+      case 'pending':
+        return '#F59E0B';
+      case 'overdue':
+        return '#EF4444';
+      default:
+        return '#6B7280';
+    }
+  };
+
+  const getStatusText = (status: string) => {
+    switch (status) {
+      case 'paid':
+        return 'Paid';
+      case 'pending':
+        return 'Pending';
+      case 'overdue':
+        return 'Overdue';
+      default:
+        return 'Unknown';
+    }
+  };
+
   return (
-    <ParallaxScrollView
-      headerBackgroundColor={{ light: '#D0D0D0', dark: '#353636' }}
-      headerImage={
-        <IconSymbol
-          size={310}
-          color="#808080"
-          name="chevron.left.forwardslash.chevron.right"
-          style={styles.headerImage}
-        />
-      }>
-      <ThemedView style={styles.titleContainer}>
-        <ThemedText type="title">Explore</ThemedText>
-      </ThemedView>
-      <ThemedText>This app includes example code to help you get started.</ThemedText>
-      <Collapsible title="File-based routing">
-        <ThemedText>
-          This app has two screens:{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/index.tsx</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">app/(tabs)/explore.tsx</ThemedText>
-        </ThemedText>
-        <ThemedText>
-          The layout file in <ThemedText type="defaultSemiBold">app/(tabs)/_layout.tsx</ThemedText>{' '}
-          sets up the tab navigator.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/router/introduction">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Android, iOS, and web support">
-        <ThemedText>
-          You can open this project on Android, iOS, and the web. To open the web version, press{' '}
-          <ThemedText type="defaultSemiBold">w</ThemedText> in the terminal running this project.
-        </ThemedText>
-      </Collapsible>
-      <Collapsible title="Images">
-        <ThemedText>
-          For static images, you can use the <ThemedText type="defaultSemiBold">@2x</ThemedText> and{' '}
-          <ThemedText type="defaultSemiBold">@3x</ThemedText> suffixes to provide files for
-          different screen densities
-        </ThemedText>
-        <Image source={require('@/assets/images/react-logo.png')} style={{ alignSelf: 'center' }} />
-        <ExternalLink href="https://reactnative.dev/docs/images">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Custom fonts">
-        <ThemedText>
-          Open <ThemedText type="defaultSemiBold">app/_layout.tsx</ThemedText> to see how to load{' '}
-          <ThemedText style={{ fontFamily: 'SpaceMono' }}>
-            custom fonts such as this one.
+    <TouchableOpacity>
+      <ThemedView style={[styles.invoiceCard, { backgroundColor }]}>
+        <View style={styles.invoiceHeader}>
+          <ThemedText style={[styles.invoiceId, { color: textColor }]}>
+            {invoice.id}
           </ThemedText>
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/versions/latest/sdk/font">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Light and dark mode components">
-        <ThemedText>
-          This template has light and dark mode support. The{' '}
-          <ThemedText type="defaultSemiBold">useColorScheme()</ThemedText> hook lets you inspect
-          what the user&apos;s current color scheme is, and so you can adjust UI colors accordingly.
-        </ThemedText>
-        <ExternalLink href="https://docs.expo.dev/develop/user-interface/color-themes/">
-          <ThemedText type="link">Learn more</ThemedText>
-        </ExternalLink>
-      </Collapsible>
-      <Collapsible title="Animations">
-        <ThemedText>
-          This template includes an example of an animated component. The{' '}
-          <ThemedText type="defaultSemiBold">components/HelloWave.tsx</ThemedText> component uses
-          the powerful <ThemedText type="defaultSemiBold">react-native-reanimated</ThemedText>{' '}
-          library to create a waving hand animation.
-        </ThemedText>
-        {Platform.select({
-          ios: (
-            <ThemedText>
-              The <ThemedText type="defaultSemiBold">components/ParallaxScrollView.tsx</ThemedText>{' '}
-              component provides a parallax effect for the header image.
+          <View style={[styles.statusBadge, { backgroundColor: getStatusColor(invoice.status) }]}>
+            <ThemedText style={styles.statusText}>
+              {getStatusText(invoice.status)}
             </ThemedText>
-          ),
-        })}
-      </Collapsible>
-    </ParallaxScrollView>
+          </View>
+        </View>
+        
+        <ThemedText style={[styles.clientName, { color: textColor }]}>
+          {invoice.clientName}
+        </ThemedText>
+        
+        <View style={styles.invoiceDetails}>
+          <View style={styles.detailRow}>
+            <ThemedText style={[styles.detailLabel, { color: textColor }]}>
+              Amount:
+            </ThemedText>
+            <ThemedText style={[styles.amount, { color: textColor }]}>
+              ${invoice.amount.toLocaleString()}
+            </ThemedText>
+          </View>
+          
+          <View style={styles.detailRow}>
+            <ThemedText style={[styles.detailLabel, { color: textColor }]}>
+              Date:
+            </ThemedText>
+            <ThemedText style={[styles.detailValue, { color: textColor }]}>
+              {new Date(invoice.date).toLocaleDateString()}
+            </ThemedText>
+          </View>
+          
+          <View style={styles.detailRow}>
+            <ThemedText style={[styles.detailLabel, { color: textColor }]}>
+              Due Date:
+            </ThemedText>
+            <ThemedText style={[styles.detailValue, { color: textColor }]}>
+              {new Date(invoice.dueDate).toLocaleDateString()}
+            </ThemedText>
+          </View>
+        </View>
+      </ThemedView>
+    </TouchableOpacity>
+  );
+}
+
+export default function InvoicesScreen() {
+  const backgroundColor = useThemeColor({}, 'background');
+  const textColor = useThemeColor({}, 'text');
+
+  return (
+    <ScrollView 
+      style={[styles.container, { backgroundColor }]}
+      contentContainerStyle={styles.contentContainer}
+    >
+      <View style={styles.header}>
+        <ThemedText style={[styles.title, { color: textColor }]}>
+          Invoices
+        </ThemedText>
+        <ThemedText style={[styles.subtitle, { color: textColor }]}>
+          Manage your billing invoices
+        </ThemedText>
+      </View>
+
+      <View style={styles.statsContainer}>
+        <View style={styles.statCard}>
+          <ThemedText style={[styles.statValue, { color: textColor }]}>
+            {mockInvoices.length}
+          </ThemedText>
+          <ThemedText style={[styles.statLabel, { color: textColor }]}>
+            Total Invoices
+          </ThemedText>
+        </View>
+        
+        <View style={styles.statCard}>
+          <ThemedText style={[styles.statValue, { color: textColor }]}>
+            ${mockInvoices.reduce((sum, inv) => sum + inv.amount, 0).toLocaleString()}
+          </ThemedText>
+          <ThemedText style={[styles.statLabel, { color: textColor }]}>
+            Total Amount
+          </ThemedText>
+        </View>
+      </View>
+
+      <View style={styles.invoicesContainer}>
+        <ThemedText style={[styles.sectionTitle, { color: textColor }]}>
+          Recent Invoices
+        </ThemedText>
+        
+        {mockInvoices.map((invoice) => (
+          <InvoiceCard key={invoice.id} invoice={invoice} />
+        ))}
+      </View>
+    </ScrollView>
   );
 }
 
 const styles = StyleSheet.create({
-  headerImage: {
-    color: '#808080',
-    bottom: -90,
-    left: -35,
-    position: 'absolute',
+  container: {
+    flex: 1,
   },
-  titleContainer: {
+  contentContainer: {
+    padding: 16,
+  },
+  header: {
+    marginBottom: 24,
+  },
+  title: {
+    fontSize: 28,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  subtitle: {
+    fontSize: 16,
+    opacity: 0.7,
+  },
+  statsContainer: {
     flexDirection: 'row',
-    gap: 8,
+    gap: 12,
+    marginBottom: 24,
+  },
+  statCard: {
+    flex: 1,
+    padding: 16,
+    borderRadius: 12,
+    backgroundColor: 'rgba(10, 126, 164, 0.1)',
+    alignItems: 'center',
+  },
+  statValue: {
+    fontSize: 20,
+    fontWeight: 'bold',
+    marginBottom: 4,
+  },
+  statLabel: {
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  invoicesContainer: {
+    marginBottom: 16,
+  },
+  sectionTitle: {
+    fontSize: 18,
+    fontWeight: '600',
+    marginBottom: 16,
+  },
+  invoiceCard: {
+    padding: 16,
+    borderRadius: 12,
+    marginBottom: 12,
+    shadowColor: '#000',
+    shadowOffset: {
+      width: 0,
+      height: 2,
+    },
+    shadowOpacity: 0.1,
+    shadowRadius: 3.84,
+    elevation: 5,
+  },
+  invoiceHeader: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+    marginBottom: 8,
+  },
+  invoiceId: {
+    fontSize: 14,
+    fontWeight: '600',
+  },
+  statusBadge: {
+    paddingHorizontal: 8,
+    paddingVertical: 4,
+    borderRadius: 12,
+  },
+  statusText: {
+    fontSize: 10,
+    fontWeight: '600',
+    color: '#fff',
+  },
+  clientName: {
+    fontSize: 16,
+    fontWeight: '600',
+    marginBottom: 12,
+  },
+  invoiceDetails: {
+    gap: 4,
+  },
+  detailRow: {
+    flexDirection: 'row',
+    justifyContent: 'space-between',
+    alignItems: 'center',
+  },
+  detailLabel: {
+    fontSize: 12,
+    opacity: 0.7,
+  },
+  detailValue: {
+    fontSize: 12,
+    fontWeight: '500',
+  },
+  amount: {
+    fontSize: 14,
+    fontWeight: 'bold',
   },
 });

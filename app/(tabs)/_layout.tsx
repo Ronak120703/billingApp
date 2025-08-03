@@ -15,7 +15,14 @@ export default function TabLayout() {
     <Tabs
       screenOptions={{
         tabBarActiveTintColor: Colors[colorScheme ?? 'light'].tint,
-        headerShown: false,
+        headerShown: true,
+        headerStyle: {
+          backgroundColor: Colors[colorScheme ?? 'light'].background,
+        },
+        headerTintColor: Colors[colorScheme ?? 'light'].text,
+        headerTitleStyle: {
+          fontWeight: 'bold',
+        },
         tabBarButton: HapticTab,
         tabBarBackground: TabBarBackground,
         tabBarStyle: Platform.select({
@@ -29,15 +36,25 @@ export default function TabLayout() {
       <Tabs.Screen
         name="index"
         options={{
-          title: 'Home',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
+          title: 'Dashboard',
+          headerTitle: 'Billing Dashboard',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
         }}
       />
       <Tabs.Screen
         name="explore"
         options={{
-          title: 'Explore',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="paperplane.fill" color={color} />,
+          title: 'Invoices',
+          headerTitle: 'Invoice Management',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="doc.text.fill" color={color} />,
+        }}
+      />
+      <Tabs.Screen
+        name="create-invoice"
+        options={{
+          title: 'Create',
+          headerTitle: 'Create Invoice',
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="plus.circle.fill" color={color} />,
         }}
       />
     </Tabs>
