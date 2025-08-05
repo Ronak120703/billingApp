@@ -1,6 +1,15 @@
-# Welcome to your Expo app 👋
+# Billing App with Backend API 👋
 
-This is an [Expo](https://expo.dev) project created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+This is a [Expo](https://expo.dev) billing application with a Node.js/Express backend API and MongoDB database integration, created with [`create-expo-app`](https://www.npmjs.com/package/create-expo-app).
+
+## Features
+
+- 📊 **Invoice Management**: Create, view, and manage invoices
+- 🗄️ **MongoDB Integration**: Persistent data storage with MongoDB
+- 📱 **Cross-Platform**: Works on iOS, Android, and Web
+- 🎨 **Modern UI**: Beautiful and responsive design
+- 🔍 **Search & Filter**: Find invoices by customer name
+- 📈 **Statistics**: View invoice statistics and analytics
 
 ## Get started
 
@@ -10,7 +19,22 @@ This is an [Expo](https://expo.dev) project created with [`create-expo-app`](htt
    npm install
    ```
 
-2. Start the app
+2. Set up the backend
+
+   ```bash
+   # Install backend dependencies
+   cd backend
+   npm install
+   
+   # Configure environment variables
+   cp env.example .env
+   # Edit .env with your MongoDB connection string
+   
+   # Start the backend server
+   npm run dev
+   ```
+
+3. Start the app
 
    ```bash
    npx expo start
@@ -24,6 +48,37 @@ In the output, you'll find options to open the app in a
 - [Expo Go](https://expo.dev/go), a limited sandbox for trying out app development with Expo
 
 You can start developing by editing the files inside the **app** directory. This project uses [file-based routing](https://docs.expo.dev/router/introduction).
+
+## Backend Setup
+
+This app uses a Node.js/Express backend with MongoDB for data persistence. See [MONGODB_SETUP.md](./MONGODB_SETUP.md) for detailed MongoDB setup instructions.
+
+### Quick Setup
+
+1. **Install MongoDB** locally or use MongoDB Atlas
+2. **Set up the backend**:
+   ```bash
+   cd backend
+   npm install
+   cp env.example .env
+   # Edit .env with your MongoDB connection string
+   npm run dev
+   ```
+3. **The backend will run on** `http://localhost:3000`
+
+## App Structure
+
+- **`app/(tabs)/`**: Main app screens
+  - `index.tsx`: Dashboard with statistics
+  - `create-invoice.tsx`: Create new invoices
+  - `invoices.tsx`: View and manage invoices
+- **`services/`**: API and business logic
+  - `api.ts`: REST API service for backend communication
+- **`hooks/`**: Custom React hooks
+  - `useInvoices.ts`: Invoice management hook
+- **`backend/`**: Express.js server
+  - `server.js`: Main server file with API endpoints
+  - `package.json`: Backend dependencies
 
 ## Get a fresh project
 

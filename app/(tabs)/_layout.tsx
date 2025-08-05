@@ -42,7 +42,7 @@ export default function TabLayout() {
         }}
       />
       <Tabs.Screen
-        name="explore"
+        name="invoices"
         options={{
           title: 'Invoices',
           headerTitle: 'Invoice Management',

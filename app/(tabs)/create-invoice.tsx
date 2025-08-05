@@ -1,5 +1,6 @@
 import { ThemedText } from '@/components/ThemedText';
 import { IconSymbol } from '@/components/ui/IconSymbol';
+import { useInvoices } from '@/hooks/useInvoices';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import DateTimePicker from '@react-native-community/datetimepicker';
 import * as Print from 'expo-print';
@@ -30,6 +31,8 @@ export default function CreateInvoiceScreen() {
   const backgroundColor = useThemeColor({}, 'background');
   const textColor = useThemeColor({}, 'text');
   const tintColor = useThemeColor({}, 'tint');
+
+  const { createInvoice, getNextInvoiceNumber, loading } = useInvoices();
 
   const [showDatePicker, setShowDatePicker] = useState(false);
   const [selectedDate, setSelectedDate] = useState(new Date());
@@ -142,12 +145,36 @@ export default function CreateInvoiceScreen() {
     calculateTotalWeight();
   };
 
-  const handleSave = () => {
+  const handleSave = async () => {
     if (!formData.customerName || !formData.invoiceNumber) {
       Alert.alert('Error', 'Please fill in customer name and invoice number');
       return;
     }
-    Alert.alert('Success', 'Invoice saved successfully!');
+
+    try {
+      await createInvoice(formData);
+      // Reset form after successful save
+      setFormData({
+        customerName: '',
+        customerPhone: '',
+        invoiceNumber: await getNextInvoiceNumber(),
+        date: new Date().toLocaleDateString('en-GB'),
+        wheatWeightKg: '',
+        wheatWeightMaund: '',
+        cutPieces: '',
+        number2: '',
+        number5: '',
+        totalWeightKg: '0',
+        totalWeightMaund: '૦ મણ',
+        bagQuantity: '',
+        pricePerKg: '',
+        bagAmount: '',
+        totalBagPrice: '',
+        totalAmount: '',
+      });
+    } catch (error) {
+      console.error('Error saving invoice:', error);
+    }
   };
 
   const handleDownload = async () => {
@@ -257,35 +284,49 @@ export default function CreateInvoiceScreen() {
     calculateTotal();
   }, [formData.totalWeightKg, formData.pricePerKg, formData.bagQuantity, formData.bagAmount]);
 
+  // Get next invoice number when component mounts
+  useEffect(() => {
+    const initializeInvoiceNumber = async () => {
+      try {
+        const nextNumber = await getNextInvoiceNumber();
+        setFormData(prev => ({ ...prev, invoiceNumber: nextNumber }));
+      } catch (error) {
+        console.error('Error getting next invoice number:', error);
+      }
+    };
+    
+    initializeInvoiceNumber();
+  }, [getNextInvoiceNumber]);
+
   const handleBin = () => {
     Alert.alert(
-      'Delete Invoice',
-      'Are you sure you want to delete this invoice?',
+      'Clear Form',
+      'Are you sure you want to clear this form?',
       [
         { text: 'Cancel', style: 'cancel' },
         { 
-          text: 'Delete', 
+          text: 'Clear', 
           style: 'destructive',
-          onPress: () => {
-                                                      setFormData({
-                 customerName: '',
-                 customerPhone: '',
-                 invoiceNumber: 'INV-001',
-                 date: new Date().toLocaleDateString('en-GB'),
-                 wheatWeightKg: '',
-                 wheatWeightMaund: '',
-                 cutPieces: '',
-                 number2: '',
-                 number5: '',
-                 totalWeightKg: '0',
-                 totalWeightMaund: '૦ મણ',
-                 bagQuantity: '',
-                 pricePerKg: '',
-                 bagAmount: '',
-                 totalBagPrice: '',
-                 totalAmount: '',
-               });
-            Alert.alert('Deleted', 'Invoice has been deleted');
+          onPress: async () => {
+            setFormData({
+              customerName: '',
+              customerPhone: '',
+              invoiceNumber: await getNextInvoiceNumber(),
+              date: new Date().toLocaleDateString('en-GB'),
+              wheatWeightKg: '',
+              wheatWeightMaund: '',
+              cutPieces: '',
+              number2: '',
+              number5: '',
+              totalWeightKg: '0',
+              totalWeightMaund: '૦ મણ',
+              bagQuantity: '',
+              pricePerKg: '',
+              bagAmount: '',
+              totalBagPrice: '',
+              totalAmount: '',
+            });
+            Alert.alert('Cleared', 'Form has been cleared');
           }
         }
       ]
@@ -553,9 +594,10 @@ export default function CreateInvoiceScreen() {
         <TouchableOpacity 
           style={[styles.button, styles.saveButton, { backgroundColor: tintColor }]}
           onPress={handleSave}
+          disabled={loading}
         >
           <IconSymbol size={20} name="square.and.arrow.down" color="#fff" />
-          <ThemedText style={styles.buttonText}>Save</ThemedText>
+          <ThemedText style={styles.buttonText}>{loading ? 'Saving...' : 'Save'}</ThemedText>
         </TouchableOpacity>
 
         <TouchableOpacity 
