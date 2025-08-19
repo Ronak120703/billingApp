@@ -38,7 +38,7 @@ export default function TabLayout() {
         options={{
           title: 'Dashboard',
           headerTitle: 'Billing Dashboard',
-          tabBarIcon: ({ color }) => <IconSymbol size={28} name="chart.bar.fill" color={color} />,
+          tabBarIcon: ({ color }) => <IconSymbol size={28} name="house.fill" color={color} />,
         }}
       />
       <Tabs.Screen

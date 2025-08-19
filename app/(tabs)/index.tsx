@@ -2,6 +2,7 @@ import { BillingChart } from '@/components/BillingChart';
 import { DashboardCard } from '@/components/DashboardCard';
 import { PeriodSelector } from '@/components/PeriodSelector';
 import { ThemedText } from '@/components/ThemedText';
+import { IconSymbol } from '@/components/ui/IconSymbol';
 import { useThemeColor } from '@/hooks/useThemeColor';
 import { getBillingData } from '@/services/billingData';
 import React, { useState } from 'react';
@@ -36,33 +37,45 @@ export default function DashboardScreen() {
       />
 
       <View style={styles.cardsContainer}>
-        <DashboardCard
-          title="Total Revenue"
-          value={`$${billingData.revenue.toLocaleString()}`}
-          subtitle={`${selectedPeriod} earnings`}
-          trend={{ value: 12.5, isPositive: true }}
-        />
+        <View style={styles.cardItem}>
+          <DashboardCard
+            title="Total Revenue"
+            value={`$${billingData.revenue.toLocaleString()}`}
+            subtitle={`${selectedPeriod} earnings`}
+            trend={{ value: 12.5, isPositive: true }}
+            icon={<IconSymbol name="chart.bar.fill" size={20} color={textColor} />}
+          />
+        </View>
 
-        <DashboardCard
-          title="Invoices Generated"
-          value={billingData.invoices.toString()}
-          subtitle={`${selectedPeriod} invoices`}
-          trend={{ value: 8.2, isPositive: true }}
-        />
+        <View style={styles.cardItem}>
+          <DashboardCard
+            title="Invoices Generated"
+            value={billingData.invoices.toString()}
+            subtitle={`${selectedPeriod} invoices`}
+            trend={{ value: 8.2, isPositive: true }}
+            icon={<IconSymbol name="doc.text.fill" size={20} color={textColor} />}
+          />
+        </View>
 
-        <DashboardCard
-          title="Pending Amount"
-          value={`$${billingData.pendingAmount.toLocaleString()}`}
-          subtitle="Awaiting payment"
-          trend={{ value: 3.1, isPositive: false }}
-        />
+        <View style={styles.cardItem}>
+          <DashboardCard
+            title="Pending Amount"
+            value={`$${billingData.pendingAmount.toLocaleString()}`}
+            subtitle="Awaiting payment"
+            trend={{ value: 3.1, isPositive: false }}
+            icon={<IconSymbol name="clock.fill" size={20} color={textColor} />}
+          />
+        </View>
 
-        <DashboardCard
-          title="Paid Amount"
-          value={`$${billingData.paidAmount.toLocaleString()}`}
-          subtitle="Successfully collected"
-          trend={{ value: 15.7, isPositive: true }}
-        />
+        <View style={styles.cardItem}>
+          <DashboardCard
+            title="Paid Amount"
+            value={`$${billingData.paidAmount.toLocaleString()}`}
+            subtitle="Successfully collected"
+            trend={{ value: 15.7, isPositive: true }}
+            icon={<IconSymbol name="checkmark.circle.fill" size={20} color={textColor} />}
+          />
+        </View>
       </View>
 
       <BillingChart
@@ -107,6 +120,13 @@ const styles = StyleSheet.create({
   },
   cardsContainer: {
     marginBottom: 16,
+    flexDirection: 'row',
+    flexWrap: 'wrap',
+    justifyContent: 'space-between',
+  },
+  cardItem: {
+    width: '48%',
+    marginBottom: 12,
   },
   summaryContainer: {
     marginTop: 16,
